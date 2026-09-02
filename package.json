@@ -1,0 +1,23 @@
+{
+  "name": "soatga-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "SOATGA V1 - Commercial Management SaaS driven by Natural Language for SME in Burkina Faso",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@soatga/web",
+    "build:packages": "npm run build --workspace=@soatga/shared && npm run build --workspace=@soatga/validation && npm run build --workspace=@soatga/domain && npm run build --workspace=@soatga/ai",
+    "build": "npm run build:packages && npm run build --workspace=@soatga/web",
+    "lint": "npm run lint --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
