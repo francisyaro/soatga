@@ -2,27 +2,35 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { User, Lock, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [useOtp, setUseOtp] = useState(false);
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  const [identifier, setIdentifier] = useState('francisyaro@soatga.bf');
+  const [password, setPassword] = useState('••••••••');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    window.location.href = '/voice/draft';
+    login(identifier, password);
   };
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-sm border border-gray-100 space-y-6 text-center">
-        {/* Red Icon Badge */}
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-brand-red flex items-center justify-center text-white shadow-md shadow-brand-red/20">
-          <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
-            <path d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm0 10c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z" />
-          </svg>
+      <div className="max-w-md w-full bg-white rounded-3xl p-8 shadow-sm border border-stone-200/80 space-y-6 text-center">
+        {/* Official Brand Logo Icon */}
+        <div className="mx-auto w-16 h-16 relative flex items-center justify-center">
+          <Image
+            src="/icon.png"
+            alt="SOATGA Icon"
+            width={64}
+            height={64}
+            className="object-contain"
+            priority
+          />
         </div>
 
         {/* Heading */}
@@ -39,10 +47,10 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-5 text-left">
           {/* Identifier Input */}
           <div>
-            <label className="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
               Téléphone ou e-mail
             </label>
-            <div className="relative rounded-xl shadow-sm">
+            <div className="relative rounded-xl shadow-xs">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
                 <User className="w-5 h-5" />
               </div>
@@ -51,7 +59,7 @@ export default function LoginPage() {
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder="Entrez votre téléphone ou e-mail"
-                className="w-full pl-11 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent text-sm transition-all"
+                className="w-full pl-11 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition-all"
                 required
               />
             </div>
@@ -60,10 +68,10 @@ export default function LoginPage() {
           {/* Password Input */}
           {!useOtp && (
             <div>
-              <label className="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
                 Mot de passe
               </label>
-              <div className="relative rounded-xl shadow-sm">
+              <div className="relative rounded-xl shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
                   <Lock className="w-5 h-5" />
                 </div>
@@ -72,7 +80,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Entrez votre mot de passe"
-                  className="w-full pl-11 pr-11 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent text-sm transition-all"
+                  className="w-full pl-11 pr-11 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent transition-all"
                   required
                 />
                 <button
@@ -87,7 +95,7 @@ export default function LoginPage() {
           )}
 
           {/* Checkbox and Forgot password link */}
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-xs font-semibold">
             <label className="flex items-center space-x-2 text-stone-600 cursor-pointer">
               <input
                 type="checkbox"
@@ -97,7 +105,7 @@ export default function LoginPage() {
               />
               <span>Recevoir un code OTP à la place</span>
             </label>
-            <a href="#" className="font-semibold text-brand-red hover:underline">
+            <a href="#" className="font-bold text-brand-red hover:underline">
               Mot de passe oublié ?
             </a>
           </div>
@@ -105,14 +113,14 @@ export default function LoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3.5 px-4 bg-brand-red hover:bg-brand-red-hover text-white font-semibold rounded-xl shadow-md transition-all transform active:scale-98 text-sm"
+            className="w-full py-3.5 px-4 bg-brand-red hover:bg-brand-red-hover text-white font-bold rounded-xl shadow-md transition-all transform active:scale-98 text-sm cursor-pointer"
           >
             Se connecter
           </button>
         </form>
 
         <div className="border-t border-stone-100 pt-4">
-          <div className="flex items-center justify-center space-x-2 text-xs font-medium text-emerald-600">
+          <div className="flex items-center justify-center space-x-2 text-xs font-semibold text-emerald-600">
             <ShieldCheck className="w-4 h-4" />
             <span>Connexion sécurisée • Réseau stable</span>
           </div>

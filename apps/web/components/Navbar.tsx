@@ -4,15 +4,18 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Mic, ChevronDown, Menu } from 'lucide-react';
+import { Mic, ChevronDown, Menu, Store } from 'lucide-react';
 import { MobileDrawer } from './MobileDrawer';
 import { VoiceModal } from './VoiceModal';
 import { NotificationCenter } from './NotificationCenter';
+import { useAuth } from '@/context/AuthContext';
 
 export function Navbar() {
   const pathname = usePathname();
+  const { user, initials, activeShop, setActiveShop } = useAuth();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
 
   const navLinks = [
     { label: "Aujourd'hui", href: '/' },
@@ -25,6 +28,8 @@ export function Navbar() {
     { label: 'Caisse', href: '/cash' },
     { label: 'Brouillon', href: '/voice/draft' },
   ];
+
+  const shopsList = ['Boutique Gounghin', 'Boutique 1200 Logements', 'Dépôt Central Tanghin'];
 
   return (
     <>
@@ -91,12 +96,60 @@ export function Navbar() {
             {/* Real-time Notification Center */}
             <NotificationCenter />
 
-            {/* User Profile */}
+            {/* Boutique Selector Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setIsShopMenuOpen(!isShopMenuOpen)}
+                className="flex items-center space-x-1 text-xs bg-stone-50 hover:bg-stone-100 px-2.5 py-1.5 rounded-lg border border-stone-200 transition-colors"
+              >
+                <Store className="w-3.5 h-3.5 text-stone-500" />
+                <span className="font-semibold text-stone-800 text-[11px] sm:text-xs max-w-28 truncate">
+                  {activeShop}
+                </span>
+                <ChevronDown className="w-3.5 h-3.5 text-stone-500" />
+              </button>
+
+              {isShopMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsShopMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 p-2 space-y-1">
+                    <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block px-2.5 py-1">
+                      Changer de point de vente
+                    </span>
+                    {shopsList.map((shop) => (
+                      <button
+                        key={shop}
+                        onClick={() => {
+                          setActiveShop(shop);
+                          setIsShopMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors ${
+                          activeShop === shop
+                            ? 'bg-red-50 text-brand-red font-bold'
+                            : 'text-stone-700 hover:bg-stone-50'
+                        }`}
+                      >
+                        <span>{shop}</span>
+                        {activeShop === shop && (
+                          <span className="w-2 h-2 rounded-full bg-brand-red" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* User Profile Avatar with Dynamic Initials */}
             <Link
               href="/profile"
-              className="w-8 h-8 rounded-full bg-stone-200 text-stone-700 font-bold text-xs flex items-center justify-center border border-stone-300 hover:border-brand-red transition-colors"
+              title={`Connecté en tant que ${user.fullName}`}
+              className="w-9 h-9 rounded-full bg-stone-900 text-white font-black text-xs flex items-center justify-center shadow-sm border border-stone-700 hover:bg-brand-red transition-all transform active:scale-95"
             >
-              MK
+              {initials}
             </Link>
           </div>
         </div>
