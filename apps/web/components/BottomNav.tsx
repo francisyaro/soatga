@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, ShoppingBag, Mic, CreditCard, Menu } from 'lucide-react';
 import { MobileDrawer } from './MobileDrawer';
+import { VoiceModal } from './VoiceModal';
 
 export function BottomNav() {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
 
   return (
     <>
@@ -35,13 +37,13 @@ export function BottomNav() {
           <span>Ventes</span>
         </Link>
 
-        {/* Center Floating Mic Button */}
-        <Link
-          href="/voice/draft"
+        {/* Center Floating Mic Button -> Opens Speech Recognition Modal */}
+        <button
+          onClick={() => setIsVoiceModalOpen(true)}
           className="relative -top-5 bg-brand-red hover:bg-brand-red-hover text-white w-14 h-14 rounded-full flex flex-col items-center justify-center shadow-lg shadow-brand-red/40 border-4 border-white transition-all transform active:scale-95"
         >
           <Mic className="w-6 h-6 animate-pulse" />
-        </Link>
+        </button>
 
         {/* Crédits */}
         <Link
@@ -66,6 +68,9 @@ export function BottomNav() {
 
       {/* Mobile Drawer Overlay */}
       <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+
+      {/* Real-time Microphone Speech Recognition Modal */}
+      <VoiceModal isOpen={isVoiceModalOpen} onClose={() => setIsVoiceModalOpen(false)} />
     </>
   );
 }

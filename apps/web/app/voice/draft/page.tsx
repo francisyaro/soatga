@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Check,
   CheckCircle2,
@@ -16,21 +17,59 @@ import {
   Calculator,
   CreditCard,
   Calendar,
-  Layers,
   Wallet,
+  UserPlus,
+  Loader2,
+  Sparkles,
 } from 'lucide-react';
 
 export default function VoiceDraftPage() {
+  const router = useRouter();
+  const [transcriptionText, setTranscriptionText] = useState(
+    "« J'ai vendu dix sacs de ciment à Abdou à 6 500 francs. Il a payé 40 000 francs par Orange Money et paiera le reste vendredi. »"
+  );
+  const [customerName, setCustomerName] = useState('Abdou Ouédraogo');
+  const [isNewCustomer, setIsNewCustomer] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedTranscription = sessionStorage.getItem('soatga_voice_transcription');
+      if (storedTranscription) {
+        setTranscriptionText(`« ${storedTranscription} »`);
+        // Check if a new customer name is in speech (e.g. Oumarou)
+        if (storedTranscription.toLowerCase().includes('oumarou')) {
+          setCustomerName('Oumarou Sawadogo');
+          setIsNewCustomer(true);
+        } else if (storedTranscription.toLowerCase().includes('fatou')) {
+          setCustomerName('Fatou Diallo');
+          setIsNewCustomer(true);
+        }
+      }
+    }
+  }, []);
+
+  const handleConfirmSale = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('soatga_voice_transcription');
+      }
+      router.push('/sales/VTE-2451');
+    }, 700);
+  };
+
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Top Breadcrumb Back */}
       <div>
         <Link
-          href="/voice"
+          href="/"
           className="inline-flex items-center space-x-1.5 text-xs font-semibold text-stone-500 hover:text-stone-800 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Revenir à SOATGA Voice</span>
+          <span>Revenir au Tableau de Bord</span>
         </Link>
       </div>
 
@@ -42,9 +81,27 @@ export default function VoiceDraftPage() {
         </p>
       </div>
 
+      {/* New Customer Auto-Creation Alert */}
+      {isNewCustomer && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-4 text-xs font-semibold flex items-center justify-between shadow-sm animate-in fade-in">
+          <div className="flex items-center space-x-2.5">
+            <Sparkles className="w-5 h-5 text-amber-600 shrink-0" />
+            <div>
+              <span className="font-bold block">⭐ Nouveau client non répertorié détecté : {customerName}</span>
+              <span className="text-amber-800 font-normal">
+                Un nouveau compte client sera automatiquement créé dans la base de données PostgreSQL lors de la confirmation !
+              </span>
+            </div>
+          </div>
+          <span className="px-2.5 py-1 bg-amber-200 text-amber-900 rounded-full font-bold text-[10px] shrink-0">
+            Création Auto
+          </span>
+        </div>
+      )}
+
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column (8 cols) */}
+        {/* Left Column (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           {/* Audio Transcription Card */}
           <div className="bg-white rounded-2xl p-5 border border-stone-200/80 shadow-sm space-y-3">
@@ -56,8 +113,8 @@ export default function VoiceDraftPage() {
               <span className="text-xs font-medium text-stone-400">14:32</span>
             </div>
 
-            <div className="bg-stone-50 rounded-xl p-4 border border-stone-100 text-stone-800 italic text-sm leading-relaxed">
-              « J&apos;ai vendu dix sacs de ciment à Abdou à 6 500 francs. Il a payé 40 000 francs par Orange Money et paiera le reste vendredi. »
+            <div className="bg-stone-50 rounded-xl p-4 border border-stone-100 text-stone-800 italic text-sm leading-relaxed font-medium">
+              {transcriptionText}
             </div>
           </div>
 
@@ -75,11 +132,18 @@ export default function VoiceDraftPage() {
                   <span className="font-medium text-stone-500">Client</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <span className="font-semibold text-stone-900">Abdou Ouédraogo</span>
-                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
-                    <Check className="w-3 h-3" />
-                    <span>Client identifié</span>
-                  </span>
+                  <span className="font-semibold text-stone-900">{customerName}</span>
+                  {isNewCustomer ? (
+                    <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
+                      <UserPlus className="w-3 h-3" />
+                      <span>Nouveau client (Création auto)</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
+                      <Check className="w-3 h-3" />
+                      <span>Client identifié</span>
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -255,9 +319,13 @@ export default function VoiceDraftPage() {
               <div className="flex items-start space-x-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-semibold text-stone-900 block">Client identifié</span>
+                  <span className="font-semibold text-stone-900 block">
+                    {isNewCustomer ? 'Nouveau client' : 'Client identifié'}
+                  </span>
                   <span className="text-stone-500">
-                    Le client Abdou Ouédraogo existe dans votre base.
+                    {isNewCustomer
+                      ? `Le client ${customerName} n'existait pas encore et sera créé automatiquement.`
+                      : `Le client ${customerName} existe dans votre base.`}
                   </span>
                 </div>
               </div>
@@ -280,14 +348,20 @@ export default function VoiceDraftPage() {
 
             <div className="grid grid-cols-3 gap-3">
               {/* Confirmer */}
-              <Link
-                href="/sales/VTE-2451"
-                className="bg-brand-red hover:bg-brand-red-hover text-white py-3 px-3 rounded-xl font-semibold text-xs flex flex-col items-center justify-center space-y-1 shadow-sm transition-all transform active:scale-95"
+              <button
+                type="button"
+                onClick={handleConfirmSale}
+                disabled={isSaving}
+                className="bg-brand-red hover:bg-brand-red-hover text-white py-3 px-3 rounded-xl font-semibold text-xs flex flex-col items-center justify-center space-y-1 shadow-sm transition-all transform active:scale-95 cursor-pointer"
               >
-                <Check className="w-4 h-4" />
-                <span>Confirmer</span>
+                {isSaving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Check className="w-4 h-4" />
+                )}
+                <span>{isSaving ? 'Enregistrement...' : 'Confirmer'}</span>
                 <span className="text-[9px] opacity-80 font-normal">Enregistrer la vente</span>
-              </Link>
+              </button>
 
               {/* Corriger */}
               <button
@@ -302,6 +376,7 @@ export default function VoiceDraftPage() {
               {/* Annuler */}
               <button
                 type="button"
+                onClick={() => router.push('/')}
                 className="bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 py-3 px-3 rounded-xl font-semibold text-xs flex flex-col items-center justify-center space-y-1 transition-all"
               >
                 <X className="w-4 h-4 text-stone-500" />

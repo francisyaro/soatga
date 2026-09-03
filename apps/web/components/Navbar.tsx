@@ -4,12 +4,15 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Mic, ChevronDown, Bell, Menu } from 'lucide-react';
+import { Mic, ChevronDown, Menu } from 'lucide-react';
 import { MobileDrawer } from './MobileDrawer';
+import { VoiceModal } from './VoiceModal';
+import { NotificationCenter } from './NotificationCenter';
 
 export function Navbar() {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
 
   const navLinks = [
     { label: "Aujourd'hui", href: '/' },
@@ -76,30 +79,34 @@ export function Navbar() {
               <Menu className="w-5 h-5" />
             </button>
 
-            {/* Voice Action Button (Hidden on smallest screens, visible on sm+) */}
-            <Link
-              href="/voice/draft"
+            {/* Voice Action Button */}
+            <button
+              onClick={() => setIsVoiceModalOpen(true)}
               className="hidden sm:flex bg-brand-red hover:bg-brand-red-hover text-white text-xs font-bold px-3.5 py-2 rounded-full items-center space-x-1.5 shadow-sm transition-all transform active:scale-95"
             >
               <Mic className="w-4 h-4" />
               <span>Parler à SOATGA</span>
-            </Link>
-
-            {/* Notifications */}
-            <button className="text-gray-500 hover:text-gray-700 p-1.5 rounded-full hover:bg-gray-100">
-              <Bell className="w-4 h-4" />
             </button>
 
+            {/* Real-time Notification Center */}
+            <NotificationCenter />
+
             {/* User Profile */}
-            <div className="w-8 h-8 rounded-full bg-stone-200 text-stone-700 font-bold text-xs flex items-center justify-center border border-stone-300">
+            <Link
+              href="/profile"
+              className="w-8 h-8 rounded-full bg-stone-200 text-stone-700 font-bold text-xs flex items-center justify-center border border-stone-300 hover:border-brand-red transition-colors"
+            >
               MK
-            </div>
+            </Link>
           </div>
         </div>
       </header>
 
       {/* Mobile Drawer Overlay */}
       <MobileDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} />
+
+      {/* Real-time Microphone Speech Recognition Modal */}
+      <VoiceModal isOpen={isVoiceModalOpen} onClose={() => setIsVoiceModalOpen(false)} />
     </>
   );
 }
