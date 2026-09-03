@@ -1,10 +1,26 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
+import { BottomNav } from '@/components/BottomNav';
 
 export const metadata: Metadata = {
-  title: 'SOATGA — Gestion commercial par langage naturel',
-  description: 'Plateforme SaaS multi-tenant de gestion commerciale pilotable par voix et texte pour les commerces au Burkina Faso.',
+  title: 'SOATGA — Gestion commerciale par langage naturel',
+  description:
+    'Plateforme SaaS multi-tenant de gestion commerciale pilotable par voix et texte pour les commerces au Burkina Faso.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'SOATGA',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#d9381e',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -14,12 +30,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className="bg-brand-bg text-stone-900 min-h-screen flex flex-col antialiased">
+      <body className="bg-brand-bg text-stone-900 min-h-screen flex flex-col antialiased pb-16 lg:pb-0">
         <Navbar />
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </main>
-        <footer className="bg-white border-t border-gray-200 py-4 text-center text-xs text-gray-500">
+        <BottomNav />
+        <footer className="bg-white border-t border-stone-200 py-4 text-center text-xs text-stone-500 hidden lg:block">
           <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between">
             <p>© 2026 SOATGA — Tous droits réservés. Burkina Faso.</p>
             <p className="flex items-center space-x-2 mt-2 sm:mt-0">
